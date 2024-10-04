@@ -4,10 +4,58 @@ from tkinter import *
 root = Tk()
 root.title("Turoni's Pizza POS")
 root.geometry = ("3000x650")
+root.resizable(False, False)
 
 #-------------------------Functions--------------------------#
+def drink_options():
+    for widget in choices.winfo_children():
+        widget.destroy()
+    
+    soft_drinks = tkinter.Button(choices, text="Soft Drinks", width=10, font=("Courier", 15),borderwidth=0)
+    soft_drinks.grid(row=1, column=0, padx = 10, pady= 10, ipady = 30)
 
+    bottled_beer = tkinter.Button(choices, text="Bottled Beer", width=10, font=("Courier", 15),borderwidth=0)
+    bottled_beer.grid(row=1, column=1, padx = 10, pady=10, ipady=30)
 
+    draft = tkinter.Button(choices, text="Draft", width=10, font=("Courier", 15),borderwidth=0)
+    draft.grid(row=1, column=2, padx = 10, pady= 10, ipady = 30)
+
+    brew_spcl = tkinter.Button(choices, wraplength= 80, text="Brewery Specials", width=10, font=("Courier", 15),borderwidth=0)
+    brew_spcl.grid(row=2, column=0, padx = 10, pady= 10, ipady = 21)
+
+    mixed_drinks = tkinter.Button(choices, text="Mixed Drinks", width=10, font=("Courier", 15),borderwidth=0)
+    mixed_drinks.grid(row=2, column=1, padx = 10, pady= 10, ipady = 30)
+    
+
+def appetizer_options():
+    for widget in choices.winfo_children():
+        widget.destroy()
+    
+    garlic_toast = tkinter.Button(choices, text="Garlic Toast", width=10, font=("Courier", 15),borderwidth=0)
+    garlic_toast.grid(row=1, column=0, padx = 10, pady= 10, ipady = 30)
+    
+    breadsticks = tkinter.Button(choices, text="Breadsticks", width=10, font=("Courier", 15),borderwidth=0)
+    breadsticks.grid(row=1, column=1, padx = 10, pady=10, ipady=30)
+
+    mozzarella = tkinter.Button(choices, wraplength= 80, text="Mozarella Sticks", width=10, font=("Courier", 15),borderwidth=0)
+    mozzarella.grid(row=1, column=2, padx = 10, pady= 10, ipady = 21)
+
+    grilled_cheese = tkinter.Button(choices, wraplength= 80, text="Grilled Cheese", width=10, font=("Courier", 15),borderwidth=0)
+    grilled_cheese.grid(row=2, column=0, padx = 10, pady= 10, ipady = 21)
+
+    bruschetta = tkinter.Button(choices, text="Bruschetta", width=10, font=("Courier", 15),borderwidth=0)
+    bruschetta.grid(row=2, column=1, padx = 10, pady= 10, ipady = 30)
+    
+    wings = tkinter.Button(choices, wraplength= 80, text="Bonless Wings", width=10, font=("Courier", 15),borderwidth=0)
+    wings.grid(row=2, column=2, padx = 10, pady= 10, ipady = 21)
+    
+    popper_toast = tkinter.Button(choices, wraplength= 80, text="Popper Toast", width=10, font=("Courier", 15),borderwidth=0)
+    popper_toast.grid(row=3, column=0, padx = 10, pady=10, ipady=21)
+
+    jalapeno = tkinter.Button(choices, wraplength= 80, text="Jalapeno Poppers", width=10, font=("Courier", 15),borderwidth=0)
+    jalapeno.grid(row=3, column=1, padx = 10, pady= 10, ipady = 21)
+
+    
 
 #-------------------------Widgets--------------------------#
 Background_Frame = Frame(root, highlightbackground="Black", highlightthickness=2, background="seashell3")
@@ -62,10 +110,10 @@ printer.grid(row=0, column=2, ipady=5, pady=5, padx=5)
 
 
 #Menu Buttons
-drinks = tkinter.Button(menu, text="Drinks", width=10, font=("Courier", 15), borderwidth=0)
+drinks = tkinter.Button(menu, text="Drinks", width=10, font=("Courier", 15), borderwidth=0, command=lambda: drink_options())
 drinks.grid(row=1, column=0, padx = 2, pady= 10, ipady = 30)
 
-appetizers = tkinter.Button(menu, text="Appetizers", width=10, font=("Courier", 15),borderwidth=0)
+appetizers = tkinter.Button(menu, text="Appetizers", width=10, font=("Courier", 15),borderwidth=0, command=lambda: appetizer_options())
 appetizers.grid(row=1, column=1, padx = 5, pady=10, ipady=30)
 
 lunch_spcl = tkinter.Button(menu, wraplength= 80, text="Lunch Specials", width=10, font=("Courier", 15),borderwidth=0)
@@ -95,21 +143,9 @@ sides.grid(row=5, column= 1, padx = 5, pady= 10, ipady = 30)
 catering = tkinter.Button(menu, text="Catering", width = 25, font=("Courier", 15),borderwidth=0)
 catering.grid(row=6, column=0, pady = 5, ipady=20, columnspan=2)
 
+
 #Choices Buttons
-soft_drinks = tkinter.Button(choices, text="Soft Drinks", width=10, font=("Courier", 15),borderwidth=0)
-soft_drinks.grid(row=1, column=0, padx = 10, pady= 10, ipady = 30)
 
-bottled_beer = tkinter.Button(choices, text="Bottled Beer", width=10, font=("Courier", 15),borderwidth=0)
-bottled_beer.grid(row=1, column=1, padx = 10, pady=10, ipady=30)
-
-draft = tkinter.Button(choices, text="Draft", width=10, font=("Courier", 15),borderwidth=0)
-draft.grid(row=1, column=2, padx = 10, pady= 10, ipady = 30)
-
-brew_spcl = tkinter.Button(choices, wraplength= 80, text="Brewery Specials", width=10, font=("Courier", 15),borderwidth=0)
-brew_spcl.grid(row=2, column=0, padx = 10, pady= 10, ipady = 21)
-
-mixed_drinks = tkinter.Button(choices, text="Mixed Drinks", width=10, font=("Courier", 15),borderwidth=0)
-mixed_drinks.grid(row=2, column=1, padx = 10, pady= 10, ipady = 30)
 
 #Ticket Buttons
 order= tkinter.Label(ticket, text="Order", bg="White", fg="Black", font=("Courier", 15),borderwidth=0)
