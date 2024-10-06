@@ -48,13 +48,13 @@ def add_to_total(price):
     
     #Delete everything from total textbox and rewrite after each item added
     total.delete("1.0", "end")
-    total.insert(END, "Subtotal:                $")
+    total.insert(END, "Subtotal:              $")
     total.insert(END, subtotal_insert)
     total.insert(END, '\n')
-    total.insert(END, "Tax:                     $")
+    total.insert(END, "Tax:                   $")
     total.insert(END, tax_insert)
     total.insert(END, '\n')
-    total.insert(END, "Total:                   $")
+    total.insert(END, "Total:                 $")
     total.insert(END, total_insert)
     
 def sandwich_size(item_name):
@@ -66,6 +66,9 @@ def sandwich_size(item_name):
     def full(item_name):
         new_name = item_name + " (full)"
         add_to_list(new_name, 12.68)
+        size_window.destroy()
+        
+    def cncl():
         size_window.destroy()
     
     
@@ -90,10 +93,53 @@ def sandwich_size(item_name):
     half_option.grid(row=1, column=0, ipady=20, pady=10)
     full_option = Button(size_frame, text="Full", width=10, font=("Courier", 15),borderwidth=0, bg="White", fg="Black", command=lambda: full(item_name))
     full_option.grid(row=1, column=1, ipady=20, pady=10)
-    cancel = Button(size_frame, text="Cancel", width=5, font=("Courier", 15),borderwidth=0, bg="White", fg="Black")
+    cancel = Button(size_frame, text="Cancel", width=5, font=("Courier", 15),borderwidth=0, bg="White", fg="Black", command=lambda: cncl())
     cancel.grid(row=2, column=0, ipady=10, pady=10, columnspan=2)
     
+def pizza_size(item_name, s_price, m_price, l_price):
+    def small(item_name, price):
+        new_name = item_name + " (sm)"
+        add_to_list(new_name, price)
+        size_window.destroy()
+                
+    def medium(item_name, price):
+        new_name = item_name + " (med)"
+        add_to_list(new_name, price)
+        size_window.destroy()
+        
+    def large(item_name, price):
+        new_name = item_name + " (lrg)"
+        add_to_list(new_name, price)
+        size_window.destroy()
     
+    def cncl():
+        size_window.destroy()
+    
+    size_window = Toplevel(root)
+    #Set window position
+    root_x = root.winfo_rootx()
+    root_y = root.winfo_rooty()
+    size_x = root_x + 400
+    size_y = root_y + 200
+    size_window.geometry(f'+{size_x}+{size_y}')
+    
+    size_window.title(item_name)
+    #size_window.geometry("400x200")
+    size_window.resizable(False, False)
+    
+    size_frame = Frame(size_window, width=380, height=180, background="seashell3", highlightbackground="Black", highlightthickness=2,)
+    size_frame.grid(row=0, column=0, padx=10, pady=10, sticky="nsew", rowspan=3, columnspan=2)
+    
+    sizelbl = Label(size_frame, text="Size?", background="seashell3", fg="Black", font=("Courier", 12))
+    sizelbl.grid(row=0, column=0, sticky="nsew", ipadx=167, columnspan=3)
+    small_option = Button(size_frame, text="Small", width=10, font=("Courier", 15),borderwidth=0, bg="White", fg="Black", command=lambda: small(item_name, s_price))
+    small_option.grid(row=1, column=0, ipady=20, pady=10)
+    medium_option = Button(size_frame, text="Medium", width=10, font=("Courier", 15),borderwidth=0, bg="White", fg="Black", command=lambda: medium(item_name, m_price))
+    medium_option.grid(row=1, column=1, ipady=20, pady=10)
+    large_option = Button(size_frame, text="Large", width=10, font=("Courier", 15),borderwidth=0, bg="White", fg="Black", command=lambda: large(item_name, l_price))
+    large_option.grid(row=1, column=2, ipady=20, pady=10)
+    cancel = Button(size_frame, text="Cancel", width=5, font=("Courier", 15),borderwidth=0, bg="White", fg="Black", command=lambda: cncl())
+    cancel.grid(row=2, column=0, ipady=10, pady=10, columnspan=3)
     
 
 def drink_options():
@@ -186,51 +232,51 @@ def pizza_options():
     for widget in choices.winfo_children():
         widget.destroy()
     
-    house_spcl = tkinter.Button(choices, text="House\nSpecial", width=10, font=("Courier", 15),borderwidth=0)
+    house_spcl = tkinter.Button(choices, text="House\nSpecial", width=10, font=("Courier", 15),borderwidth=0, command=lambda: pizza_size("House Special", 14.11, 24.06, 32.78))
     house_spcl.grid(row=1, column=0, padx = 10, pady= 10, ipady = 21)
     
-    strom_pie = tkinter.Button(choices, text="Stromboli\nPie", width=10, font=("Courier", 15),borderwidth=0)
+    strom_pie = tkinter.Button(choices, text="Stromboli\nPie", width=10, font=("Courier", 15),borderwidth=0, command=lambda: pizza_size("Stromboli Pie", 14.54, 24.08, 32.40))
     strom_pie.grid(row=1, column=1, padx = 10, pady=10, ipady=21)
 
-    marg = tkinter.Button(choices, text="Margarita", width=10, font=("Courier", 15),borderwidth=0)
+    marg = tkinter.Button(choices, text="Margarita", width=10, font=("Courier", 15),borderwidth=0, command=lambda: pizza_size("Queen Margarita", 13.02, 19.98, 28.06))
     marg.grid(row=1, column=2, padx = 10, pady= 10, ipady = 30)
 
-    hawaiian = tkinter.Button(choices, text="Hawaiian", width=10, font=("Courier", 15),borderwidth=0)
+    hawaiian = tkinter.Button(choices, text="Hawaiian", width=10, font=("Courier", 15),borderwidth=0, command=lambda: pizza_size("Hawaiian Delight", 14.44, 20.51, 28.61))
     hawaiian.grid(row=2, column=0, padx = 10, pady= 10, ipady = 30)
 
-    vinny_p = tkinter.Button(choices, text="Vinny\nSpecial", width=10, font=("Courier", 15),borderwidth=0)
-    vinny_p.grid(row=2, column=1, padx = 10, pady= 10, ipady = 21)
+    vincen = tkinter.Button(choices, text="Vincenzio", width=10, font=("Courier", 15),borderwidth=0, command=lambda: pizza_size("Vencenzio", 16.15, 26.10, 34.82))
+    vincen.grid(row=2, column=1, padx = 10, pady= 10, ipady = 30)
     
-    iron = tkinter.Button(choices, text="Iron\nMan", width=10, font=("Courier", 15),borderwidth=0)
+    iron = tkinter.Button(choices, text="Iron\nMan", width=10, font=("Courier", 15),borderwidth=0, command=lambda: pizza_size("Iron Man", 14.11, 24.06, 32.78))
     iron.grid(row=2, column=2, padx = 10, pady= 10, ipady = 21)
     
-    greek_p = tkinter.Button(choices, text="Greek", width=10, font=("Courier", 15),borderwidth=0)
+    greek_p = tkinter.Button(choices, text="Greek", width=10, font=("Courier", 15),borderwidth=0, command=lambda: pizza_size("Greek", 14.11, 24.06, 32.78))
     greek_p.grid(row=3, column=0, padx = 10, pady=10, ipady=30)
 
-    veggie = tkinter.Button(choices, text="Veggie\nSpecial", width=10, font=("Courier", 15),borderwidth=0)
+    veggie = tkinter.Button(choices, text="Veggie\nSpecial", width=10, font=("Courier", 15),borderwidth=0, command=lambda: pizza_size("Veggie Special", 14.11, 24.06, 32.78))
     veggie.grid(row=3, column=1, padx = 10, pady= 10, ipady = 21)
     
-    meat = tkinter.Button(choices, text="Lots a\nMeat", width=10, font=("Courier", 15),borderwidth=0)
+    meat = tkinter.Button(choices, text="Lots a\nMeat", width=10, font=("Courier", 15),borderwidth=0, command=lambda: pizza_size("Lots-a-Meat", 17.75, 24.81, 33.76))
     meat.grid(row=3, column=2, padx = 10, pady= 10, ipady = 21)
     
-    pepper = tkinter.Button(choices, text="Pepper\nPlanet", width=10, font=("Courier", 15),borderwidth=0)
+    pepper = tkinter.Button(choices, text="Pepper\nPlanet", width=10, font=("Courier", 15),borderwidth=0, command=lambda: pizza_size("Pepper Planet", 14.11, 24.06, 32.78))
     pepper.grid(row=4, column=0, padx = 10, pady=10, ipady=21)
 
-    buffalo = tkinter.Button(choices, text="Buffalo", width=10, font=("Courier", 15),borderwidth=0)
+    buffalo = tkinter.Button(choices, text="Buffalo", width=10, font=("Courier", 15),borderwidth=0, command=lambda: pizza_size("Buffalo Chicken", 16.15, 26.10, 34.82))
     buffalo.grid(row=4, column=1, padx = 10, pady= 10, ipady = 30)
 
-    bbq = tkinter.Button(choices, text="BBQ", width=10, font=("Courier", 15),borderwidth=0)
+    bbq = tkinter.Button(choices, text="BBQ", width=10, font=("Courier", 15),borderwidth=0, command=lambda: pizza_size("BBQ", 16.15, 26.10, 34.82))
     bbq.grid(row=4, column=2, padx = 10, pady= 10, ipady = 30)
     
 def dessert_options():
     for widget in choices.winfo_children():
         widget.destroy()
     
-    cookies = tkinter.Button(choices, text="Cookies", width=10, font=("Courier", 15),borderwidth=0)
+    cookies = tkinter.Button(choices, text="Cookies", width=10, font=("Courier", 15),borderwidth=0, command=lambda: add_to_list("Cookie", 3.48))
     cookies.grid(row=1, column=0, padx = 10, pady= 10, ipady = 30)
-    cheesecake = tkinter.Button(choices, text="Cheesecake", width=10, font=("Courier", 15),borderwidth=0)
+    cheesecake = tkinter.Button(choices, text="Cheesecake", width=10, font=("Courier", 15),borderwidth=0, command=lambda: add_to_list("Cheesecake", 8.21))
     cheesecake.grid(row=1, column=1, padx = 10, pady= 10, ipady = 30)
-    ice_cream = tkinter.Button(choices, text="Ice Cream", width=10, font=("Courier", 15),borderwidth=0)
+    ice_cream = tkinter.Button(choices, text="Ice Cream", width=10, font=("Courier", 15),borderwidth=0, command=lambda: add_to_list("Ice Cream", 5.44))
     ice_cream.grid(row=1, column=2, padx = 10, pady= 10, ipady = 30)
     
 def cancel_menu():
