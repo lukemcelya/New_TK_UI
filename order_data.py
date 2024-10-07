@@ -1,30 +1,46 @@
 from tkinter import *
 import pandas as pd
 
-order_data = pd.DataFrame()
-order_items = pd.DataFrame()
+temp_order = []
+order_data_list = []
+order_names = []
+order_prices = []
+order_df = pd.DataFrame()
 
 class OrderData:
     def add_item(self, item_name, price):
-        global current_order
-    
-        #Add to dataframe
-        new_item = pd.DataFrame({item_name : [price]})
-    
-        return pd.concat([order_items, new_item], ignore_index=True)
+        global order_items
+        global order_names
+        global order_prices
+
+        order_names.append(item_name)
+        order_prices.append(price)
     
     def close_order(self):
-        pass
-    
-    def close_order(self, order_num):
-        global order_items
+        global order_names
+        global order_prices
+        global order_data_list
+        global temp_order
         
-        tempdict = pd.DataFrame([order_num, order_items])
+        tempdict = dict(zip(order_names, order_prices))
+        temp_order = tempdict
+        order_data_list.append(tempdict)
+        order_names.clear()
+        order_prices.clear()
+        print(order_data_list)
+            
+    def add_order_to_df(self, subtotal, tax, total):
+        global order_data_list
+        global temp_order
+        global order_df
         
-        return pd.concat([order_data, tempdict], ignore_index=True)
-
-    #for testing
-    def print_data(self):
-        global order_data
+        n_items : int = 0
+        for items in temp_order:
+            n_items += 1
         
-        return print(order_data)
+        dictionary = {'Number of Items' : n_items, 'Subtotal' : subtotal, 'Tax' : tax, 'Total' : total}
+        
+        
+        return pd.concat([order_df, dictionary], ignore_index=True)
+        
+        

@@ -4,11 +4,19 @@ import order_data
 
 root = Tk()
 root.title("Turoni's Pizza POS")
-root.geometry = ("3000x650")
+
+screen_width = root.winfo_screenwidth()
+screen_height = root.winfo_screenheight()
+window_width = 1200
+window_height = 800
+x = (screen_width - window_width) // 2
+y = (screen_height - window_height) // 2
+root.geometry = (f'{window_width}x{window_height}+{x}+{y}')
 root.resizable(False, False)
 
 #-------------------------Functions--------------------------#
 
+##Global Variables##
 current_subtotal : float = 0.00
 current_tax : float = 0.00
 current_total : float = 0.00
@@ -139,12 +147,13 @@ def pizza_size(item_name, s_price, m_price, l_price):
 def finish_order():
     global order_number
     
-    order_data.OrderData().close_order(order_number)
+    order_data.OrderData().close_order()
     order_number += 1
     clear_lists()
     
 def clear_lists():
     global current_subtotal, current_tax, current_total
+    order_data.OrderData().add_order_to_df(current_subtotal, current_tax, current_total)
     
     current_subtotal = 0
     current_tax = 0
@@ -415,6 +424,3 @@ cancel.grid(row=0, column=0, ipady=5, padx=5)
 #-------------------------Images--------------------------#
 
 root.mainloop()
-
-##################################
-order_data.OrderData().print_data()
