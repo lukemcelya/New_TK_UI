@@ -9,18 +9,13 @@ root.resizable(False, False)
 
 #-------------------------Functions--------------------------#
 
-current_order = []
 current_subtotal : float = 0.00
 current_tax : float = 0.00
 current_total : float = 0.00
+order_number : int = 0
 
 def add_to_list(item_name : str, price : float):
-    #Global var
-    global current_order
-    
     #Add item to list box
-    current_item = [item_name, price]
-    current_order.append(current_item)
     order_shown.insert(END, item_name + '\n')
     order_shown.insert(END, "                      $")
     #Format price to 2 decimal places
@@ -141,6 +136,21 @@ def pizza_size(item_name, s_price, m_price, l_price):
     cancel = Button(size_frame, text="Cancel", width=5, font=("Courier", 15),borderwidth=0, bg="White", fg="Black", command=lambda: cncl())
     cancel.grid(row=2, column=0, ipady=10, pady=10, columnspan=3)
     
+def finish_order():
+    global order_number
+    
+    order_data.OrderData().close_order(order_number)
+    order_number += 1
+    clear_lists()
+    
+def clear_lists():
+    global current_subtotal, current_tax, current_total
+    
+    current_subtotal = 0
+    current_tax = 0
+    current_total = 0
+    order_shown.delete("1.0", "end")
+    total.delete("1.0", "end")
 
 def drink_options():
     for widget in choices.winfo_children():
@@ -397,7 +407,7 @@ chain.grid(row=0, column=0,ipady=5, pady=5, padx=5)
 pay = tkinter.Button(bottom_ticket, text="Staff Bank",width = 10, font=("Courier", 15),borderwidth=0)
 pay.grid(row=0, column=1, ipady=5, pady=5, padx=5)
 
-finish = tkinter.Button(bottom_ticket, text = "Done", font=("Courier", 15),borderwidth=0)
+finish = tkinter.Button(bottom_ticket, text = "Done", font=("Courier", 15),borderwidth=0, command=lambda: finish_order())
 finish.grid(row=0, column=2, ipady=5, pady=5, padx=5)
 
 cancel = tkinter.Button(bottom_menu, text = "Cancel", bg='red', fg='black', font=("Courier", 15),borderwidth=0, command=lambda: cancel_menu())
@@ -405,4 +415,6 @@ cancel.grid(row=0, column=0, ipady=5, padx=5)
 #-------------------------Images--------------------------#
 
 root.mainloop()
-print(current_order)
+
+##################################
+order_data.OrderData().print_data()

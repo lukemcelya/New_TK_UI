@@ -15,3 +15,16 @@ class OrderData:
     
     def close_order(self):
         pass
+    
+    def close_order(self, order_num):
+        global order_items
+        
+        tempdict = pd.DataFrame([order_num, order_items])
+        
+        return pd.concat([order_data, tempdict], ignore_index=True)
+
+    #for testing
+    def print_data(self):
+        global order_data
+        
+        return print(order_data)
