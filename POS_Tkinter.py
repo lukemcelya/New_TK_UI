@@ -1,6 +1,7 @@
 import tkinter
 from tkinter import *
 import order_data
+import pandas as pd
 
 root = Tk()
 root.title("Turoni's Pizza POS")
@@ -20,16 +21,17 @@ root.resizable(False, False)
 current_subtotal : float = 0.00
 current_tax : float = 0.00
 current_total : float = 0.00
-order_number : int = 0
 
 def add_to_list(item_name : str, price : float):
     #Add item to list box
+    order_shown.config(state=NORMAL)
     order_shown.insert(END, item_name + '\n')
     order_shown.insert(END, "                      $")
     #Format price to 2 decimal places
     price_insert = "{: .2f}".format(float(price))
     order_shown.insert(END, price_insert)
     order_shown.insert(END, '\n')
+    order_shown.config(state=DISABLED)
     
     order_data.OrderData().add_item(item_name, price)
     add_to_total(price)
@@ -50,6 +52,7 @@ def add_to_total(price):
     
     
     #Delete everything from total textbox and rewrite after each item added
+    total.config(state=NORMAL)
     total.delete("1.0", "end")
     total.insert(END, "Subtotal:              $")
     total.insert(END, subtotal_insert)
@@ -59,6 +62,7 @@ def add_to_total(price):
     total.insert(END, '\n')
     total.insert(END, "Total:                 $")
     total.insert(END, total_insert)
+    total.config(state=DISABLED)
     
 def sandwich_size(item_name):
     def half(item_name):
@@ -145,10 +149,7 @@ def pizza_size(item_name, s_price, m_price, l_price):
     cancel.grid(row=2, column=0, ipady=10, pady=10, columnspan=3)
     
 def finish_order():
-    global order_number
-    
     order_data.OrderData().close_order()
-    order_number += 1
     clear_lists()
     
 def clear_lists():
@@ -158,8 +159,13 @@ def clear_lists():
     current_subtotal = 0
     current_tax = 0
     current_total = 0
+    
+    order_shown.config(state=NORMAL)
+    total.config(state=NORMAL)
     order_shown.delete("1.0", "end")
     total.delete("1.0", "end")
+    order_shown.config(state=DISABLED)
+    total.config(state=DISABLED)
 
 def drink_options():
     for widget in choices.winfo_children():
@@ -180,6 +186,50 @@ def drink_options():
     mixed_drinks = tkinter.Button(choices, text="Mixed Drinks", width=10, font=("Courier", 15),borderwidth=0, command=lambda: add_to_list("Mixed Drink", 10.00))
     mixed_drinks.grid(row=2, column=1, padx = 10, pady= 10, ipady = 30)
     
+def order_list_window():
+    
+    def cncl_selection():
+        orders_window.destroy()  
+        
+    orders_window = Toplevel(root)
+    #Set window position
+    root_x = root.winfo_rootx()
+    root_y = root.winfo_rooty()
+    size_x = root_x + 260
+    size_y = root_y + 120
+    orders_window.geometry(f'+{size_x}+{size_y}')
+    
+    orders_window.title("Orders")
+    #size_window.geometry("400x200")
+    orders_window.resizable(False, False)
+    
+    order_frame = Frame(orders_window, width=600, height=400, background="seashell3", highlightbackground="Black", highlightthickness=2,)
+    order_frame.grid(row=0, column=0, padx=10, pady=10, sticky="nsew", rowspan=3, columnspan=2)
+    
+    order_label = Label(order_frame, text="Orders", font=("Courier", 30), borderwidth=0, background="seashell3", foreground="Black")
+    order_label.grid(row=0, column=0, columnspan=2)
+    order_lists = Listbox(order_frame, width=30, height= 15, fg='Black', bg='White', font=("Courier", 20), highlightcolor="Black", highlightbackground="Black", highlightthickness=1)
+    order_lists.grid(row=1, column=0, columnspan=2)
+    
+    cancel = Button(order_frame, text = "Cancel", width=10, font=("Courier", 15),borderwidth=0, command=lambda: cncl_selection())
+    cancel.grid(row=2, column=0, padx=10, pady=10, ipady=10)
+    select = Button(order_frame, text = "Select", width=10, font=("Courier", 15),borderwidth=0)
+    select.grid(row=2, column=1, padx=10, pady=10, ipady=10)
+    
+    
+    #Get order info
+    data = order_data.OrderData().get_order_info()
+    indx = 0 #Keep track of index
+    for i in data.iterrows():
+        total_insert = "{: .2f}".format(float(data.iloc[indx, 3])) #Format float to 2 decimal places
+        input_str = "Order #" + str(indx+1) + ":        Total: $" + str(total_insert)
+        
+        #Add to list
+        order_lists.insert(END, input_str)
+        indx += 1
+        
+    
+        
 
 def appetizer_options():
     for widget in choices.winfo_children():
@@ -209,6 +259,26 @@ def appetizer_options():
     jalapeno = tkinter.Button(choices, wraplength= 80, text="Jalapeno Poppers", width=10, font=("Courier", 15),borderwidth=0, command=lambda: add_to_list("Jalapeno Poppers", 10.49))
     jalapeno.grid(row=3, column=1, padx = 10, pady= 10, ipady = 21)
 
+def daily_options():
+    for widget in choices.winfo_children():
+        widget.destroy()
+    
+    monday = tkinter.Button(choices, wraplength=80, text = "Greek Salad (M)", width=10, font=("Courier", 15),borderwidth=0, command = lambda: add_to_list("Monday Spcl", 8.87))
+    monday.grid(row=1, column=0, padx = 10, pady= 10, ipady = 21)
+    
+    tuesday = tkinter.Button(choices, wraplength=80, text = "Ham + Cheese (T)", width=10, font=("Courier", 15),borderwidth=0, command = lambda: add_to_list("Tuesday Spcl", 10.14))
+    tuesday.grid(row=1, column=1, padx = 10, pady= 10, ipady = 21)
+    
+    wednesday = tkinter.Button(choices, text = "Stromboli\n(W)", width=10, font=("Courier", 15),borderwidth=0, command = lambda: add_to_list("Wednesday Spcl", 10.14))
+    wednesday.grid(row=1, column=2, padx = 10, pady= 10, ipady = 30)
+    
+    thursday = tkinter.Button(choices, wraplength=80, text = "Steak Sandwich (Th)", width=10, font=("Courier", 15),borderwidth=0, command = lambda: add_to_list("Thursday Spcl", 11.41))
+    thursday.grid(row=2, column=0, padx = 10, pady= 10, ipady = 21)
+    
+    friday = tkinter.Button(choices, wraplength=80, text = "Italian Salad (F)", width=10, font=("Courier", 15),borderwidth=0, command = lambda: add_to_list("Friday Spcl", 9.58))
+    friday.grid(row=2, column=1, padx = 10, pady= 10, ipady = 21)
+    
+        
 def salad_options():
     for widget in choices.winfo_children():
         widget.destroy()
@@ -287,6 +357,22 @@ def pizza_options():
     bbq = tkinter.Button(choices, text="BBQ", width=10, font=("Courier", 15),borderwidth=0, command=lambda: pizza_size("BBQ", 16.15, 26.10, 34.82))
     bbq.grid(row=4, column=2, padx = 10, pady= 10, ipady = 30)
     
+def kiddie_options():
+    for widget in choices.winfo_children():
+        widget.destroy()
+    
+    boneless = tkinter.Button(choices, wraplength= 80, text="Boneless Wing Meal", width = 10, font = ("Courier", 15), borderwidth = 0, command = lambda: add_to_list("Boneless Wing (Kiddie)", 8.34))
+    boneless.grid(row=0, column=0, padx=10, pady=10, ipady=21)
+    
+    pizza_meal = tkinter.Button(choices, wraplength= 80, text="7in Pizza Meal", width = 10, font = ("Courier", 15), borderwidth = 0, command = lambda: add_to_list("7in. Cheese Pizza (Kiddie)", 8.14))
+    pizza_meal.grid(row=0, column=1, padx=10, pady=10, ipady=21)
+    
+    grilled_cheese = tkinter.Button(choices, wraplength= 80, text="Grilled Cheese", width = 10, font = ("Courier", 15), borderwidth = 0, command = lambda: add_to_list("Grilled Cheese(Kiddie)", 7.85))
+    grilled_cheese.grid(row=0, column=2, padx=10, pady=10, ipady=30)
+    
+    cheese_fries = tkinter.Button(choices, wraplength= 80, text="Cheese Fries", width = 10, font = ("Courier", 15), borderwidth = 0, command = lambda: add_to_list("Cheese Fries (Kiddie)", 4.99))
+    cheese_fries.grid(row=1, column=0, padx=10, pady=10, ipady=30)
+    
 def dessert_options():
     for widget in choices.winfo_children():
         widget.destroy()
@@ -297,6 +383,37 @@ def dessert_options():
     cheesecake.grid(row=1, column=1, padx = 10, pady= 10, ipady = 30)
     ice_cream = tkinter.Button(choices, text="Ice Cream", width=10, font=("Courier", 15),borderwidth=0, command=lambda: add_to_list("Ice Cream", 5.44))
     ice_cream.grid(row=1, column=2, padx = 10, pady= 10, ipady = 30)
+
+def side_options():
+    for widget in choices.winfo_children():
+        widget.destroy()
+    
+    cheese_cup = tkinter.Button(choices, text="Cheese\nCup", width=10, font=("Courier", 15),borderwidth=0, command=lambda: add_to_list("Cheese Cup", 1.00))
+    cheese_cup.grid(row=1, column=0, padx = 10, pady= 10, ipady = 21)
+    
+    ranch = tkinter.Button(choices, text="Ranch\nCup", width=10, font=("Courier", 15),borderwidth=0, command=lambda: add_to_list("Ranch Cup", .75))
+    ranch.grid(row=1, column=1, padx = 10, pady=10, ipady=21)
+
+    marinara = tkinter.Button(choices, text="Marinara\nSauce", width=10, font=("Courier", 15),borderwidth=0, command=lambda: add_to_list("Marinara Sauce", .50))
+    marinara.grid(row=1, column=2, padx = 10, pady= 10, ipady = 21)
+
+    veggie_order = tkinter.Button(choices, text="Order of\nVeggie", width=10, font=("Courier", 15),borderwidth=0, command=lambda: add_to_list("Order of Veggies", 2.00))
+    veggie_order.grid(row=2, column=0, padx = 10, pady= 10, ipady = 21)
+
+    italian = tkinter.Button(choices, text="Italian\nSauce", width=10, font=("Courier", 15),borderwidth=0, command=lambda: add_to_list("Italian Sauce", .75))
+    italian.grid(row=2, column=1, padx = 10, pady= 10, ipady = 21)
+    
+    buffalo = tkinter.Button(choices, text="Buffalo\nSauce", width=10, font=("Courier", 15),borderwidth=0, command=lambda: add_to_list("Buffalo Sauce", .75))
+    buffalo.grid(row=2, column=2, padx = 10, pady= 10, ipady = 21)
+    
+    bbq = tkinter.Button(choices, text="BBQ\nSauce", width=10, font=("Courier", 15),borderwidth=0, command=lambda: add_to_list("BBQ Sauce", .75))
+    bbq.grid(row=3, column=0, padx = 10, pady=10, ipady=21)
+
+    garlic = tkinter.Button(choices, text="Garlic\nSauce", width=10, font=("Courier", 15),borderwidth=0, command=lambda: add_to_list("Garlic Sauce", .75))
+    garlic.grid(row=3, column=1, padx = 10, pady= 10, ipady = 21)
+    
+    blue_cheese = tkinter.Button(choices, text="Blue\nCheese", width=10, font=("Courier", 15),borderwidth=0, command=lambda: add_to_list("Blue Cheese", 1.00))
+    blue_cheese.grid(row=3, column=2, padx = 10, pady= 10, ipady = 21)    
     
 def cancel_menu():
     for widget in choices.winfo_children():
@@ -347,7 +464,7 @@ combine.grid(row=0, column=1, ipady=5, padx=5, pady=5)
 void = tkinter.Button(top_ticket, text="void", font=("Courier", 15), borderwidth=0)
 void.grid(row=0, column=0,ipady=5, pady=5, padx=5)
 
-checks = tkinter.Button(top_ticket, text="Checks",width = 10, font=("Courier", 15), borderwidth=0)
+checks = tkinter.Button(top_ticket, text="Checks",width = 10, font=("Courier", 15), borderwidth=0, command=lambda: order_list_window())
 checks.grid(row=0, column=1, ipady=5, pady=5, padx=5)
 
 printer = tkinter.Button(top_ticket, text = "print", font=("Courier", 15), borderwidth=0)
@@ -361,8 +478,8 @@ drinks.grid(row=1, column=0, padx = 2, pady= 10, ipady = 30)
 appetizers = tkinter.Button(menu, text="Appetizers", width=10, font=("Courier", 15),borderwidth=0, command=lambda: appetizer_options())
 appetizers.grid(row=1, column=1, padx = 5, pady=10, ipady=30)
 
-lunch_spcl = tkinter.Button(menu, wraplength= 80, text="Lunch Specials", width=10, font=("Courier", 15),borderwidth=0)
-lunch_spcl.grid(row=2, column=0, padx = 5, pady= 10, ipady = 21)
+daily = tkinter.Button(menu, wraplength= 80, text="Daily Specials", width=10, font=("Courier", 15),borderwidth=0, command = lambda: daily_options())
+daily.grid(row=2, column=0, padx = 5, pady= 10, ipady = 21)
 
 salads = tkinter.Button(menu, text="Salads", width=10, font=("Courier", 15),borderwidth=0, command=lambda: salad_options())
 salads.grid(row=2, column=1, padx = 5, pady= 10, ipady = 30)
@@ -373,7 +490,7 @@ gourmet.grid(row=3, column=0, padx = 5, pady= 10, ipady = 21)
 build = tkinter.Button(menu, wraplength= 80, text="Build Your Own", width=10, font=("Courier", 15),borderwidth=0)
 build.grid(row=3, column= 1, padx = 5, pady= 10, ipady = 21)
 
-kiddie = tkinter.Button(menu, text="Kiddie Menu", width=10, font=("Courier", 15),borderwidth=0)
+kiddie = tkinter.Button(menu, text="Kiddie Menu", width=10, font=("Courier", 15),borderwidth=0, command=lambda: kiddie_options())
 kiddie.grid(row=4, column= 0, padx = 5, pady= 10, ipady = 30)
 
 sandwiches = tkinter.Button(menu, text="Sandwiches", width=10, font=("Courier", 15),borderwidth=0, command=lambda: sandwich_options())
@@ -382,7 +499,7 @@ sandwiches.grid(row=4, column= 1, padx = 5, pady= 10, ipady = 30)
 desserts = tkinter.Button(menu, text="Desserts", width=10, font=("Courier", 15),borderwidth=0, command=lambda: dessert_options())
 desserts.grid(row=5, column= 0, padx = 5, pady= 10, ipady = 30)
 
-sides = tkinter.Button(menu, text="Side Items", width=10, font=("Courier", 15),borderwidth=0)
+sides = tkinter.Button(menu, text="Side Items", width=10, font=("Courier", 15),borderwidth=0, command=lambda: side_options())
 sides.grid(row=5, column= 1, padx = 5, pady= 10, ipady = 30)
 
 catering = tkinter.Button(menu, text="Catering", width = 25, font=("Courier", 15),borderwidth=0)
@@ -398,9 +515,11 @@ order.grid(row = 0, column=1, columnspan=3, ipadx=121, ipady=5)
 
 order_shown = Text(ticket, width=30, height= 30, highlightcolor="Black", highlightbackground="Black", highlightthickness=1, fg='Black', bg='White', font=("Courier", 15),borderwidth=0)
 order_shown.grid(row=1, column= 1, ipadx=10)
+order_shown.config(state=DISABLED)
 
 total = Text(ticket, width=30, height= 5, fg='Black', bg='White', font=("Courier", 15), highlightcolor="Black", highlightbackground="Black", highlightthickness=1)
 total.grid(row=2, column= 1, ipadx=10, padx=5, pady=5)
+total.config(state=DISABLED)
 
 
 #bottom Widgets
