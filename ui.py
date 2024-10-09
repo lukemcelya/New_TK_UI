@@ -522,14 +522,12 @@ menu_items.grid(row=0, column=0, ipady=5, columnspan=2)
 turoni_label= tkinter.Label(top_choices, text="Turoni's | Pizza & Brewery", width=30, font=("Courier", 15), borderwidth=0, background= "tomato2")
 turoni_label.grid(row=0, column=0, columnspan = 2, ipady=5, padx=5, pady=5)
 
-void = tkinter.Button(top_ticket, text="void", font=("Courier", 15), borderwidth=0)
-void.grid(row=0, column=0,ipady=5, pady=5, padx=5)
 
-checks = tkinter.Button(top_ticket, text="Checks",width = 10, font=("Courier", 15), borderwidth=0, command=lambda: order_list_window())
-checks.grid(row=0, column=1, ipady=5, pady=5, padx=5)
+checks = tkinter.Button(top_ticket, text="Checks", width=10, font=("Courier", 15), borderwidth=0, command=lambda: order_list_window())
+checks.grid(row=0, column=0, ipady=5, pady=5, padx=5)
 
-printer = tkinter.Button(top_ticket, text = "print", font=("Courier", 15), borderwidth=0)
-printer.grid(row=0, column=2, ipady=5, pady=5, padx=5)
+printer = tkinter.Button(top_ticket, width=10, text = "Print", font=("Courier", 15), borderwidth=0)
+printer.grid(row=0, column=1, ipady=5, pady=5, padx=5)
 
 
 #Menu Buttons
