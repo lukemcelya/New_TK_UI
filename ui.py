@@ -144,7 +144,48 @@ def builder_pizza(item_name, handtoss, thincrust, stuffedcrust):
     cancel = Button(size_frame, text="Cancel", width=5, font=("Courier", 15),borderwidth=0, bg="White", fg="Black", command=lambda: cncl())
     cancel.grid(row=2, column=0, ipady=10, pady=10, columnspan=3)
     
+def order_list_window():
+    
+    def cncl_selection():
+        orders_window.destroy()  
         
+    orders_window = Toplevel(root)
+    #Set window position
+    root_x = root.winfo_rootx()
+    root_y = root.winfo_rooty()
+    size_x = root_x + 260
+    size_y = root_y + 120
+    orders_window.geometry(f'+{size_x}+{size_y}')
+    
+    orders_window.title("Orders")
+    #size_window.geometry("400x200")
+    orders_window.resizable(False, False)
+    
+    order_frame = Frame(orders_window, width=600, height=400, background="seashell3", highlightbackground="Black", highlightthickness=2,)
+    order_frame.grid(row=0, column=0, padx=10, pady=10, sticky="nsew", rowspan=3, columnspan=2)
+    
+    order_label = Label(order_frame, text="Orders", font=("Courier", 30), borderwidth=0, background="seashell3", foreground="Black")
+    order_label.grid(row=0, column=0, columnspan=2)
+    order_lists = Listbox(order_frame, width=30, height= 15, fg='Black', bg='White', font=("Courier", 20), highlightcolor="Black", highlightbackground="Black", highlightthickness=1)
+    order_lists.grid(row=1, column=0, columnspan=2)
+    
+    cancel = Button(order_frame, text = "Cancel", width=10, font=("Courier", 15),borderwidth=0, command=lambda: cncl_selection())
+    cancel.grid(row=2, column=0, padx=10, pady=10, ipady=10)
+    select = Button(order_frame, text = "Select", width=10, font=("Courier", 15),borderwidth=0)
+    select.grid(row=2, column=1, padx=10, pady=10, ipady=10)
+    
+    
+    #Get order info
+    data = order_data.OrderData().get_order_info()
+    indx = 0 #Keep track of index
+    for i in data.iterrows():
+        total_insert = "{: .2f}".format(float(data.iloc[indx, 3])) #Format float to 2 decimal places
+        input_str = "Order #" + str(indx+1) + ":        Total: $" + str(total_insert)
+        
+        #Add to list
+        order_lists.insert(END, input_str)
+        indx += 1        
+
 def pizza_size(item_name, s_price, m_price, l_price):
     def small(item_name, price):
         new_name = item_name + " (sm)"
@@ -481,11 +522,14 @@ menu_items.grid(row=0, column=0, ipady=5, columnspan=2)
 turoni_label= tkinter.Label(top_choices, text="Turoni's | Pizza & Brewery", width=30, font=("Courier", 15), borderwidth=0, background= "tomato2")
 turoni_label.grid(row=0, column=0, columnspan = 2, ipady=5, padx=5, pady=5)
 
-void = tkinter.Button(top_ticket, text="void", font=("Courier", 15), width = 10, borderwidth=0)
+void = tkinter.Button(top_ticket, text="void", font=("Courier", 15), borderwidth=0)
 void.grid(row=0, column=0,ipady=5, pady=5, padx=5)
 
-printer = tkinter.Button(top_ticket, text = "print", font=("Courier", 15), width = 10, borderwidth=0)
-printer.grid(row=0, column=1, ipady=5, pady=5, padx=5)
+checks = tkinter.Button(top_ticket, text="Checks",width = 10, font=("Courier", 15), borderwidth=0, command=lambda: order_list_window())
+checks.grid(row=0, column=1, ipady=5, pady=5, padx=5)
+
+printer = tkinter.Button(top_ticket, text = "print", font=("Courier", 15), borderwidth=0)
+printer.grid(row=0, column=2, ipady=5, pady=5, padx=5)
 
 
 #Menu Buttons
