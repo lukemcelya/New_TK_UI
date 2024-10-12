@@ -20,6 +20,7 @@ root.resizable(False, False)
 current_subtotal : float = 0.00
 current_tax : float = 0.00
 current_total : float = 0.00
+current_discount: float = 0.00
 order_number : int = 0
 
 def add_to_list(item_name : str, price : float):
@@ -39,14 +40,18 @@ def add_to_total(price):
     global current_subtotal
     global current_tax
     global current_total
+    global current_discount
     
     #Calculate subtotal, tax, total (format float for display)
     current_subtotal += price
     subtotal_insert = "{: .2f}".format(float(current_subtotal))
     current_tax += price * .07
     tax_insert = "{: .2f}".format(float(current_tax))
-    current_total = current_subtotal + current_tax
-    total_insert = "{: .2f}".format(float(current_total))
+    current_total = (current_subtotal + current_tax)
+    discount = current_total * current_discount
+    discount_insert = "{: .2f}".format(float(discount))
+    discounted_total = current_total - discount
+    total_insert = "{: .2f}".format(float(discounted_total))
     
     
     #Delete everything from total textbox and rewrite after each item added
@@ -57,9 +62,52 @@ def add_to_total(price):
     total.insert(END, "Tax:                   $")
     total.insert(END, tax_insert)
     total.insert(END, '\n')
+    total.insert(END, "Discount:             -$")
+    total.insert(END, discount_insert)
+    total.insert(END, '\n')
     total.insert(END, "Total:                 $")
     total.insert(END, total_insert)
+
+def discount_menu():
+    def cncl():
+        discount_window.destroy()
+        
+    def add_discount(disc):
+        global current_discount
+        current_discount = disc
+        discount_window.destroy()
+        add_to_total(0)
     
+    discount_window = Toplevel(root)
+    #Set window position
+    root_x = root.winfo_rootx()
+    root_y = root.winfo_rooty()
+    size_x = root_x + 400
+    size_y = root_y + 200
+    discount_window.geometry(f'+{size_x}+{size_y}')
+    
+    discount_window.title("Discount")
+    #size_window.geometry("400x200")
+    discount_window.resizable(False, False)
+    
+    discount_frame = Frame(discount_window, width=380, height=180, background="seashell3", highlightbackground="Black", highlightthickness=2,)
+    discount_frame.grid(row=0, column=0, padx=10, pady=10, sticky="nsew", rowspan=3, columnspan=2)
+    
+    discountlbl = Label(discount_frame, text="Discount?", background="seashell3", fg="Black", font=("Courier", 12))
+    discountlbl.grid(row=0, column=0, sticky="nsew", ipadx=167, columnspan=3)
+    small_option = Button(discount_frame, text="10%", width=10, font=("Courier", 15),borderwidth=0, bg="White", fg="Black", command=lambda: add_discount(.10))
+    small_option.grid(row=1, column=0, ipady=20, pady=10)
+    medium_option = Button(discount_frame, text="15%", width=10, font=("Courier", 15),borderwidth=0, bg="White", fg="Black", command=lambda: add_discount(.15))
+    medium_option.grid(row=1, column=1, ipady=20, pady=10)
+    large_option = Button(discount_frame, text="25%", width=10, font=("Courier", 15),borderwidth=0, bg="White", fg="Black", command=lambda: add_discount(.25))
+    large_option.grid(row=1, column=2, ipady=20, pady=10)
+    cancel = Button(discount_frame, text="Cancel", width=5, font=("Courier", 15),borderwidth=0, bg="White", fg="Black", command=lambda: cncl())
+    cancel.grid(row=2, column=0, ipady=10, pady=10, columnspan=3)
+
+        
+        
+        
+
 def sandwich_size(item_name):
     def half(item_name):
         new_name = item_name + " (half)"
@@ -239,12 +287,13 @@ def finish_order():
     clear_lists()
     
 def clear_lists():
-    global current_subtotal, current_tax, current_total
+    global current_subtotal, current_tax, current_total, current_discount
     order_data.OrderData().add_order_to_df(current_subtotal, current_tax, current_total)
     
     current_subtotal = 0
     current_tax = 0
     current_total = 0
+    current_discount = 0
     order_shown.delete("1.0", "end")
     total.delete("1.0", "end")
 
@@ -581,7 +630,7 @@ total.grid(row=2, column= 1, ipadx=10, padx=5, pady=5)
 
 #bottom Widgets
 
-discounts= tkinter.Button(bottom_choices, text="discounts", width=30, font=("Courier", 15),borderwidth=0, background="seashell3")
+discounts= tkinter.Button(bottom_choices, text="discounts", width=30, font=("Courier", 15),borderwidth=0, background="seashell3", command=lambda: discount_menu())
 discounts.grid(row=0, column=0, columnspan=2, ipady=5, padx=5, pady=5)
 
 chain = tkinter.Button(bottom_ticket, text="Chain", font=("Courier", 15),borderwidth=0)
